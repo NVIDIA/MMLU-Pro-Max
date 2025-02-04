@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: Copyright (c) <year> NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+# SPDX-FileCopyrightText: Copyright (c) 2025 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 # SPDX-License-Identifier: MIT
 #
 # Permission is hereby granted, free of charge, to any person obtaining a
@@ -106,7 +106,7 @@ class MMLUProRobustNoAnswerConverter(MMLUProRobustConverterABC):
             prompt = self.PROMPT.format(
                 category=datapoint["category"],
                 question=datapoint["question"],
-                options="\n".join(options)
+                options=" ".join(options)
                 )
             datapoint["prompt"] = prompt
             return datapoint
