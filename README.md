@@ -25,4 +25,4 @@ Scrpts to populate The The MMLU-Pro-Robust Dataset.
 
 Loads and processes The MMLU-Pro dataset from HuggingFace Datasets: [TIGER-Lab/MMLU-Pro](https://huggingface.co/datasets/TIGER-Lab/MMLU-Pro)
 
-For populating the datasets refer to save_MMLUPro_robust_to_disk.py
+For populating the datasets refer to convert_and_save.py

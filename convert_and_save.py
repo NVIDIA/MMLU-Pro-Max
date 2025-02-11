@@ -22,8 +22,11 @@
 
 import argparse
 
-from MMLUProRobust import MMLUProRobustNoAnswerConverter
-from MMLUProRobust import MMLUProRobustBinaryConverter
+from MMLUProMax import MMLUProMaxDropCorrectAnswerConverter
+from MMLUProMax import MMLUProMaxNoCorrectAnswerConverter
+from MMLUProMax import MMLUProMaxBinaryConverter
+from MMLUProMax import MMLUProMaxMultiPromptConverter
+from MMLUProMax import MMLUProMaxChoiceOrderConverter
 
 """
 this is the script that saves the MMLUPro Robust dataset json to disk
@@ -35,34 +38,25 @@ to run the script, you need to pass the following arguments:
 5. no_answer_message: the message to replace the correct answer with
 """
 
+ALL_TASKS = [
+    MMLUProMaxDropCorrectAnswerConverter(),
+    MMLUProMaxNoCorrectAnswerConverter(replace=False, random_loc=True),
+    MMLUProMaxNoCorrectAnswerConverter(replace=True),
+    MMLUProMaxBinaryConverter(),
+    MMLUProMaxMultiPromptConverter(),
+    MMLUProMaxChoiceOrderConverter()
+]
 
-def save_MMLUPro_robust(dataset_name, save_dir, **kwargs):
-    if dataset_name == "NoAnswer":
-        dataset = MMLUProRobustNoAnswerConverter()
-    elif dataset_name == "Binary":
-        dataset = MMLUProRobustBinaryConverter()
-    else:
-        raise ValueError("Invalid dataset name. Choose from NoAnswer, Binary")
 
-    dataset.convert_and_save(save_dir, **kwargs)
-    print(f"Dataset saved to {save_dir}")
+def save_MMLUPro_MAX(save_dir, **kwargs):
+    for task in ALL_TASKS:
+        task.convert_and_save(save_dir, **kwargs)
+        print(f"Modified dataset {task.__class__.__name__} saved to {save_dir}")
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("--dataset_name", type=str, required=True)
     parser.add_argument("--save_dir", type=str, required=True)
-    parser.add_argument("--replace", type=bool, required=False)
-    parser.add_argument("--random_loc", type=bool, required=False)
-    parser.add_argument("--no_answer_message", type=str, required=False)
     args = parser.parse_args()
 
-    kwargs = {}
-    if args.replace is not None:
-        kwargs['replace'] = args.replace
-    if args.random_loc is not None:
-        kwargs['random_loc'] = args.random_loc
-    if args.no_answer_message is not None:
-        kwargs['no_answer_message'] = args.no_answer_message
-
-    save_MMLUPro_robust(args.dataset_name, args.save_dir, **kwargs)
+    save_MMLUPro_MAX(args.save_dir)
