@@ -21,22 +21,14 @@
 
 
 import argparse
-
-from MMLUProMax import MMLUProMaxDropCorrectAnswerConverter
-from MMLUProMax import MMLUProMaxNoCorrectAnswerConverter
-from MMLUProMax import MMLUProMaxBinaryConverter
-from MMLUProMax import MMLUProMaxMultiPromptConverter
-from MMLUProMax import MMLUProMaxChoiceOrderConverter
-
-"""
-this is the script that saves the MMLUPro Robust dataset json to disk
-to run the script, you need to pass the following arguments:
-1. dataset_name: the name of the dataset e.g. NoAnswer, Binary
-2. save_dir: the directory to save the dataset json
-3. replace: True or False, if NoAnswer was passed as dataset. Deaults to False
-4. random_loc: True or False, if NoAnswer was passed as dataset. Defaults to True
-5. no_answer_message: the message to replace the correct answer with
-"""
+from MMLUProMax import (
+    MMLUProMaxNoCorrectAnswerConverter,
+    MMLUProMaxBinaryConverter,
+    MMLUProMaxMultiPromptConverter,
+    MMLUProMaxChoiceOrderConverter,
+    MMLUProMaxDropCorrectAnswerConverter,
+    MMLUProMaxGenerativeConverter
+)
 
 ALL_TASKS = [
     MMLUProMaxDropCorrectAnswerConverter(),
@@ -44,7 +36,8 @@ ALL_TASKS = [
     MMLUProMaxNoCorrectAnswerConverter(replace=True),
     MMLUProMaxBinaryConverter(),
     MMLUProMaxMultiPromptConverter(),
-    MMLUProMaxChoiceOrderConverter()
+    MMLUProMaxChoiceOrderConverter(),
+    MMLUProMaxGenerativeConverter()
 ]
 
 

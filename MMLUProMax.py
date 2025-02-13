@@ -36,8 +36,7 @@ class MMLUProMaxConverterABC:
         self.prompt_dict = json.load(open("prompts.json", "r"))
 
     def load_base_dataset(self, **kwargs):
-        return load_dataset(path="TIGER-Lab/MMLU-Pro",
-                            split="test", **kwargs)
+        return load_dataset(path="TIGER-Lab/MMLU-Pro", split="test", **kwargs)
 
     @abstractmethod
     def _process_data(self, data, **kwargs):
@@ -138,9 +137,7 @@ class MMLUProMaxDropCorrectAnswerConverter(MMLUProMaxConverterABC):
         super().__init__()
         self.prompt = self.prompt_dict[self.PROMPT_KEY]
 
-    def _process_data(self,
-                      base):
-
+    def _process_data(self, base):
         def __drop_correct_answer(datapoint):
             options = datapoint["options"]
             options.pop(datapoint["answer_index"])
@@ -186,19 +183,6 @@ class MMLUProMaxMultiPromptConverter(MMLUProMaxConverterABC):
                             )
             return new_batched_docs
         return base.map(__process, batched=True)
-
-    def _add_prompt(self, data):
-        def __inner_add_prompt(datapoint):
-            prompt_template = self.prompts[datapoint["prompt_id"]]
-            prompt = prompt_template.format(
-                category=datapoint["category"],
-                question=datapoint["question"],
-                answer=datapoint["options"][datapoint["option_ind"]]
-                )
-            datapoint["input"] = prompt
-            return datapoint
-
-        return data.map(__inner_add_prompt)
 
     def _add_prompt(self, data):
         def __inner_add_prompt(datapoint):
@@ -318,3 +302,25 @@ class MMLUProMaxBinaryConverter(MMLUProMaxConverterABC):
         return data.map(__inner_add_prompt)
 
 
+class MMLUProMaxGenerativeConverter(MMLUProMaxConverterABC):
+    PROMPT_KEY = "generative_prompt"
+
+    def __init__(self):
+        super().__init__()
+        self.prompt = self.prompt_dict[self.PROMPT_KEY]
+        self.generative_ids = json.load(open("mmlu_pro_generative_ids.json", "r"))
+
+    def _process_data(self, base):
+        return base.filter(lambda datapoint: datapoint['question_id'] in self.generative_ids)
+
+    def _add_prompt(self, data):
+        def __inner_add_prompt(datapoint):
+            prompt_template = self.prompt
+            prompt = prompt_template.format(
+                category=datapoint["category"],
+                question=datapoint["question"],
+                )
+            datapoint["input"] = prompt
+            return datapoint
+
+        return data.map(__inner_add_prompt)
