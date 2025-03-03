@@ -21,13 +21,13 @@ Licensed under MIT Licence.
  DEALINGS IN THE SOFTWARE.
 
 # MMLU-Pro-Robust
-Loads and processes the MMLU-Pro dataset from HuggingFace Datasets: [TIGER-Lab/MMLU-Pro](https://huggingface.co/datasets/TIGER-Lab/MMLU-Pro) to create the MMLU-Pro-Max.
+Scripts to process MMLU-Pro (HF link: [TIGER-Lab/MMLU-Pro](https://huggingface.co/datasets/TIGER-Lab/MMLU-Pro)) and create the MMLU-Pro-Max.
 
 To create MMLU-Pro-Max manifests, run
 ```bash
 python convert_and_save.py --save_dir=SAVE_DIR
 ```
-This will create 7 manifests where 'input' field should be used for inference. Notes about the data processing classes. </br>
+
 ## MMLUProMax Converters
 
 Explore various ways to analyze and manipulate prompts for evaluating model performance. Below are the available converters:
@@ -53,3 +53,52 @@ Explore various ways to analyze and manipulate prompts for evaluating model perf
 
 - **<span style="color:teal;">MMLUProMaxGenerativeConverter()</span>**
   *Does performance in MCQ format transfer to real-life?* Leave questions that can be answered without options and directly ask the question.
+
+# Running Inference
+<br> The **<span style="color:teal;">input</span>** field of manifests should be used for inference. Only the chat template of respective model should be added before inference.</br>
+We recommend using [Nemo Skills](https://github.com/NVIDIA/NeMo-Skills/tree/main).
+
+```bash
+ns generate \
+       --cluster=cluster_config_path \
+       --server_type=vllm \
+       --model=model_path \
+       --server_gpus=1 \
+       --server_nodes=1 \
+       --output_dir=output_dir \
+       ++input_file=path_to_manifest \
+       ++prompt_config=path_to_empty_prompt.yaml \
+       ++prompt_template=model_chat_template \
+       ++inference.tokens_to_generate=2048 \
+       ++batch_size=512 \
+       ++skip_filled=True
+```
+
+# Postprocessing
+We provide scripts to postprocess model predictions and extract final answer.
+ - **<span style="color:teal;">MCQPostprocessor()</span>** Can be used to extract answer from MCQ datasets
+ - **<span style="color:teal;">BinaryPostprocessor()</span>** Can be used to extract answer from Binary evaluatin prediction
+ - **<span style="color:teal;">GenPostprocessor()</span>** Can be used to extract answer from generative evaluation prediction
+
+# Generative Evaluatin and LLM-as-a-Judge
+Pipeline for Generative Evaluation
+1. Run inference on corresponding manifest
+2. Use postprocessors.GenPostprocessor to extract prediction
+3. Run inference on the judge model using **<span style="color:teal;">judge.yaml</span>** prompt. We recommend using [Qwen-2.5 72B](https://huggingface.co/Qwen/Qwen2.5-72B-Instruct) as a judge.
+For running the judge using Nemo_Skills use
+```bash
+ns generate \
+        --generation_type=math_judge \
+        --cluster=cluster_config_path \
+        --model=/hf_models/Qwen2.5-72B-Instruct \
+        --server_type=vllm \
+        --server_gpus=8 \
+        --server_nodes=1 \
+        --output_dir=output_dir \
+        ++input_dir=path_to_mainest \
+        ++prompt_config=path_to_judge.yaml \
+        ++prompt_template=nemo_skills/prompt/template/qwen-instruct.yaml \
+        ++inference.tokens_to_generate=2048 \
+        ++batch_size=512 \
+        ++skip_filled=True
+```
