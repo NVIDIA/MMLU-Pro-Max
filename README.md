@@ -20,7 +20,7 @@ Licensed under MIT Licence.
  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  DEALINGS IN THE SOFTWARE.
 
-# MMLU-Pro-Robust
+# MMLU-Pro-Max
 Scripts to process MMLU-Pro (HF link: [TIGER-Lab/MMLU-Pro](https://huggingface.co/datasets/TIGER-Lab/MMLU-Pro)) and create the MMLU-Pro-Max.
 
 To create MMLU-Pro-Max manifests, run
