@@ -84,7 +84,7 @@ We provide scripts to postprocess model predictions and extract final answer.
 Pipeline for Generative Evaluation
 1. Run inference on corresponding manifest
 2. Use postprocessors.GenPostprocessor to extract prediction
-3. Run inference on the judge model using **<span style="color:teal;">judge.yaml</span>** prompt. We recommend using [Qwen-2.5 72B](https://huggingface.co/Qwen/Qwen2.5-72B-Instruct) as a judge.
+3. Run inference on the judge model using **<span style="color:teal;">./data/judge.yaml</span>** prompt. We recommend using [Qwen-2.5 72B](https://huggingface.co/Qwen/Qwen2.5-72B-Instruct) as a judge.
 For running the judge using Nemo_Skills use
 ```bash
 ns generate \
