@@ -37,46 +37,45 @@ class BinaryPostprocessor(Postprocessor):
         return data
 
 
-class NoneOfAnsPostprocessor(Postprocessor):
+class MCQPostprocessor(Postprocessor):
     def process(self, data):
         LABELS = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K"]
 
-        def fetch_final_answer_MCQ(model_answer, split_by="the answer is"):
-            model_answer = model_answer.strip().lower().split(split_by)[-1]
-            model_answer = model_answer.replace("(", "").replace(")", "").strip()
-            model_answer = model_answer.replace("*", "").strip()
-            model_answer = model_answer.replace("boxed", "").strip()
-            model_answer = model_answer.replace("{", "").replace("}", "").strip()
-            model_answer = model_answer.replace("\\", "").strip()
-            model_answer = model_answer.replace(",", "").strip()
+        def fetch_final_answer_MCQ(model_answer):
+            split_strings = ["the answer is", "the best answer is", "the final answer is"]
+            for split_by in split_strings:
+                if split_by in model_answer.lower():
+                    model_answer = model_answer.strip().lower().split(split_by)[-1]
+                    for c in ["(", ")", "*", "boxed", "{", "}", "\\", ",", '$', ":", "."]:
+                        model_answer = model_answer.replace(c, "").strip()
+                    if len(model_answer) == 1:
+                        if model_answer.upper() in LABELS:
+                            return model_answer.upper()
+                        print("101: Answer out of bounds of possible labels A-K.")
+                        return model_answer
 
-            if len(model_answer) == 1:
-                if model_answer.upper() in LABELS:
-                    return model_answer.upper()
-                print("101: Answer out of bounds of possible labels A-K.")
-                return model_answer
-
-            elif len(model_answer) == 0:
-                print("102: Generation ended without providing an answer.")
-                return model_answer
-
-            elif "the correct answer is" in model_answer:
-                return fetch_final_answer_MCQ(model_answer, split_by="the correct answer is")
-
-            elif "the final answer is" in model_answer:
-                return fetch_final_answer_MCQ(model_answer, split_by="the final answer is")
-            else:
-                model_answer = model_answer.strip().split(".")[0].strip()
-                model_answer = model_answer.strip().split(":")[0].strip()
-                model_answer = model_answer.strip().split(" ")[0].strip()
-
-                if model_answer.upper() in LABELS:
-                    return model_answer.upper()
-                print("103: Answer is too long to be a single letter.")
-                return model_answer
+                    elif len(model_answer) == 0:
+                        print("102: Generation ended without providing an answer.")
+                        return model_answer
+            return model_answer
 
         if self.answer_key in data:
             raise ValueError(f"Key {self.answer_key} already exists in data, the answers are already extracted.")
 
         data[self.answer_key] = data[self.generation_key].apply(fetch_final_answer_MCQ)
+        return data
+
+
+class GenPostprocessor(Postprocessor):
+    def process(self, data):
+        def extract_answer(generation):
+            generation = generation.split('boxed{')[-1]
+            if generation.endswith('}$'):
+                generation = generation[:-2]
+            return generation
+
+        if self.answer_key in data:
+            raise ValueError(f"Key {self.answer_key} already exists in data, the answers are already extracted.")
+
+        data[self.answer_key] = data[self.generation_key].apply(extract_answer)
         return data
