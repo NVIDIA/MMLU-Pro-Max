@@ -33,7 +33,7 @@ NO_ANSWER_MESSAGE = "None of the answers is correct."
 
 class MMLUProMaxConverterABC:
     def __init__(self):
-        self.prompt_dict = json.load(open("prompts.json", "r"))
+        self.prompt_dict = json.load(open("./data/prompts.json", "r"))
 
     def load_base_dataset(self, **kwargs):
         return load_dataset(path="TIGER-Lab/MMLU-Pro", split="test", **kwargs)
@@ -308,7 +308,7 @@ class MMLUProMaxGenerativeConverter(MMLUProMaxConverterABC):
     def __init__(self):
         super().__init__()
         self.prompt = self.prompt_dict[self.PROMPT_KEY]
-        self.generative_ids = json.load(open("mmlu_pro_generative_ids.json", "r"))
+        self.generative_ids = json.load(open("./data/mmlu_pro_generative_ids.json", "r"))
 
     def _process_data(self, base):
         return base.filter(lambda datapoint: datapoint['question_id'] in self.generative_ids)
