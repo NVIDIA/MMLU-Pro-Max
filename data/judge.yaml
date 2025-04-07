@@ -1,0 +1,10 @@
+# adapted from https://github.com/openai/simple-evals/blob/main/common.py
+
+system: ""
+
+user: |-
+    Look at the two answers (predicted and expected) to a question and to judge whether they are equivalent within the context of the question.\nPlease first explain your reasoning in a couple of sentences. Then respond with only Yes or No as your judgement on whether the two answers are the same.\nDo not solve the problem yourself, just the compare the two answers. Make sure that you compare the predicted and expected answers as given to you.\nIf a unit is missing from one of the answers but the numerical value is the same, consider them equivalent.\nIf predicted and expected answers are close and differ slightly - possibly due to rounding or minor calculation errors, consider them equivalent.
+
+    Problem: {question}
+    Predicted answer: {extracted_answer}
+    Expected answer: {expected_answer}
