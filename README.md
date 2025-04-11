@@ -1,6 +1,6 @@
 # MMLU-Pro-Max
 
-This repository provides code for MMLU-Pro-Max, a modified version of the MMLU-Pro[TIGER-Lab/MMLU-Pro](https://huggingface.co/datasets/TIGER-Lab/MMLU-Pro) benchmark designed for a deeper and more realistic evaluation of large language models (LLMs). Traditional MCQ evaluations are widely used but often fail to capture a model’s true capabilities due to their sensitivity to input variations. MMLU-Pro-Max introduces a multilayer analysis approach that tests robustness across formatting, phrasing, and choice structure. Our codebase allows researchers to apply this evaluation framework on the MMLU-Pro dataset and beyond, enabling a more comprehensive assessment of LLM performance.
+This repository provides code for MMLU-Pro-Max, a modified version of the MMLU-Pro ([TIGER-Lab/MMLU-Pro](https://huggingface.co/datasets/TIGER-Lab/MMLU-Pro)) benchmark designed for a deeper and more realistic evaluation of large language models (LLMs). Traditional MCQ evaluations are widely used but often fail to capture a model’s true capabilities due to their sensitivity to input variations. MMLU-Pro-Max introduces a multilayer analysis approach that tests robustness across formatting, phrasing, and choice structure. Our codebase allows researchers to apply this evaluation framework on the MMLU-Pro dataset and beyond, enabling a more comprehensive assessment of LLM performance.
 
 ![Infographic of mmlu-pro-max](img/infographic.jpg)
 
